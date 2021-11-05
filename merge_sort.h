@@ -1,42 +1,13 @@
 #ifndef MERGE_SORT_H
 #define MERGE_SORT_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include "array.h"
 
-struct array {
-    int *v;
-    int n;
-
-};
-
-inline void alloc_arr( struct array* arr, int n ) {
-    arr->n = n;
-    arr->v = (int*) malloc( n * sizeof( int ) );
-}
-
-inline void dealloc_arr( struct array* arr ) {
-    free(arr->v);
-}
-
-inline void randomize_arr( struct array* arr, int n ) {
-    alloc_arr( arr, n );
-
-    for( int i=0; i<n; i++ ) {
-        arr->v[i] = rand() % 2 * n;
-    }
-} 
-
-inline void print_arr( struct array* arr ) {
-    for( int i=0; i<arr->n; i++ ) {
-        printf("%d ", arr->v[i]);
-    }
-    printf("\n");
-}
-
-inline void merge( struct array* arr, int left, int mid, int right ) {
+static inline 
+void merge( array* arr, int left, int mid, int right ) {
     /// for the first half of the range of the array
     int start1 = left;
     int end1 = mid;
@@ -67,7 +38,8 @@ inline void merge( struct array* arr, int left, int mid, int right ) {
 }
 
 /// merge sort using serial programming
-inline void merge_sort_serial( struct array* arr, int left, int right ) {
+static inline 
+void merge_sort_serial( array* arr, int left, int right ) {
     /// base case: if left is greater than or equal to right, then : it means there are no more elements to sort
     if( left >= right ) return;
     
@@ -86,24 +58,27 @@ inline void merge_sort_serial( struct array* arr, int left, int right ) {
 
 
 /// merge sort using parallel programming
-inline void merge_sort_parallel( struct array* arr, int left, int right ) {
+static inline 
+void merge_sort_parallel( array* arr, int left, int right ) {
     /// base case: if left is greater than or equal to right, then : it means there are no more elements to sort
     if( left >= right ) return;
-    
+
     /// mid is the middle of the range of the array that is being considered
     int mid = left + (right - left) / 2;
     
+    omp_set_nested(1);
+
     #pragma omp parallel sections 
     {
         #pragma omp section
         {
             /// sort the left half of the range of the array
-            merge_sort_serial( arr, left, mid );
+            merge_sort_parallel( arr, left, mid );
         }
         #pragma omp section
         {
             /// sort the right half of the range of the array
-            merge_sort_serial( arr, mid+1, right );
+            merge_sort_parallel( arr, mid+1, right );
         }
     }
     

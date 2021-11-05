@@ -1,5 +1,6 @@
 tasks:
   - init: |
-      echo 'TODO: build project'
+      cp ./compile /usr/bin
+      compile merge_sort
     command: |
       echo 'TODO: start app'

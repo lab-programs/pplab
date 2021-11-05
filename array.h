@@ -3,6 +3,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
+#include "time.h"
 
 /* define type as whatever your array should contain */
 typedef int type;
@@ -17,37 +18,35 @@ typedef struct array
 } array;
 
 /* function to allocate heap memeory to the array */
-inline void alloc_arr( array *arr, int n )
+static inline 
+array* new_array( int n )
 {
+    array *arr = (array*) malloc( sizeof(arr) );
     arr->n = n;
-    free( arr->v );
     arr->v = ( type* ) malloc( n * sizeof(type) );
-}
-
-/* function to deallocate heap memory from the struct */
-inline void dealloc_arr( array *arr )
-{
-    free( arr->v );
+    return arr;
 }
 
 /* function to set the elements of the array to random */
-inline void randomise_arr( array *arr, int n )
+static inline 
+void randomise_arr( array *arr )
 {
-    /* allocate memory to the array */
-    alloc_arr(arr, n);
+    /* create a random seed */
+    srand(time(0));
 
     /* for every element in the array */
     for ( int i=0; i<arr->n; i++ )
     {
         /* set the array element to a random val */
-        arr->v[i] = rand() % n;
+        arr->v[i] = rand() % arr->n;
     }
 
 }
 
 
 /* function to print the array */
-inline void print_arr( array *arr )
+static inline 
+void print_arr( array *arr )
 {
     for( int i=0; i<arr->n; i++ )
     {

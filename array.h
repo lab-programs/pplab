@@ -19,13 +19,23 @@ typedef struct array
 
 /* function to allocate heap memeory to the array */
 static inline 
-array* new_array( int n )
+array* new_arr( int n )
 {
     array *arr = (array*) malloc( sizeof(arr) );
     arr->n = n;
     arr->v = ( type* ) malloc( n * sizeof(type) );
     return arr;
 }
+
+/* function to deallocate heap memory allocated to array */
+static inline
+void free_arr( array *a ) {
+    if ( a != NULL ) {
+        free(a->v);
+        free(a);
+    }
+}
+
 
 /* function to set the elements of the array to random */
 static inline 
@@ -56,5 +66,19 @@ void print_arr( array *arr )
     printf("\n");
 }
 
+static inline
+int min( int a, int b )
+{
+    return (a < b) ? a : b;
+}
+
+static inline
+void copy_arr( array* a, array *b )
+{
+    for( int i=0; i<min(a->n, b->n); i++ )
+    {
+        b->v[i] = a->v[i];
+    }
+}
 
 #endif

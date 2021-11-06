@@ -3,3 +3,4 @@ tasks:
       cp ./compile /usr/bin
     command: |
       cp ./compile /usr/bin
+      compile merge_sort

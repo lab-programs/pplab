@@ -65,21 +65,13 @@ void merge_sort_parallel( array* arr, int left, int right ) {
 
     /// mid is the middle of the range of the array that is being considered
     int mid = left + (right - left) / 2;
-    
-    omp_set_nested(1);
 
-    #pragma omp parallel sections 
+    #pragma omp parallel section
     {
         #pragma omp section
-        {
-            /// sort the left half of the range of the array
             merge_sort_parallel( arr, left, mid );
-        }
         #pragma omp section
-        {
-            /// sort the right half of the range of the array
             merge_sort_parallel( arr, mid+1, right );
-        }
     }
     
     /// merge the two halves of the array

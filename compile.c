@@ -14,6 +14,7 @@ int main( int argc, char **argv ) {
     strcat( s, ".c -o " );
     strcat( s, argv[1] );
     strcat( s, " -fopenmp" );
+    strcat( s, " -lm" );
     system( s );
     
 }

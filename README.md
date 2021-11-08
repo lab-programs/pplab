@@ -4,9 +4,9 @@
 
 ### Part-A
 
-1. Write parallel program using OpenMP to sort n element using merge sort.
+1. Write parallel program using OpenMP to sort n element using merge sort. - [Merge Sort Header](merge_sort.h), [Main](merge_sort.c)
 
-2. Write a program to Multiply a matrix by a vector and get the result of the operation.
+2. Write a program to Multiply a matrix by a vector and get the result of the operation. - [Matrix Header](matrix.h), [Main](matrix.c)
 
 3. Write an OpenMP program which demonstrates how to "multitask",
 implement two separate task, one to generate prime table and other to

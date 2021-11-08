@@ -11,7 +11,7 @@
 3. Write an OpenMP program which demonstrates how to "multitask",
 implement two separate task, one to generate prime table and other to
 generate sine table for a given input using OpenMP for parallel execution.
-Justify the inference.
+Justify the inference. - [Sinprime Header](sinprime.h), [Main](sinprime.c)
 
 4. Write a program to show how first private clause works. (Factorial program)
 

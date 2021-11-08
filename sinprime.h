@@ -26,10 +26,28 @@ void generate_prime_table( int n )
     {
         if( sieve->v[i] == 1 )
         {
-            printf("%d ", i);
+            printf("%d\n", i);
         }
     }
     printf("\n\n");
+    free(sieve);
+}
+
+static inline
+void generate_sin_table( int n ) 
+{
+    double sin_table[n+1];
+    double angles[n+1];
+    for( int i=0; i<=n; i++ )
+    {
+        angles[i] = ((double)i/(double)n) * M_PI;
+        sin_table[i] = sin( ((double)i/(double)n) * M_PI );
+    }
+    for( int i=0; i<=n; i++ )
+    {
+        printf("sin(%lf) = %lf\n", angles[i], sin_table[i]);
+    }
+    printf("\n");
 }
 
 #endif

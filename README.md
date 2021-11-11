@@ -13,10 +13,9 @@ implement two separate task, one to generate prime table and other to
 generate sine table for a given input using OpenMP for parallel execution.
 Justify the inference. - [Sinprime Header](sinprime.h), [Main](sinprime.c)
 
-4. Write a program to show how first private clause works. (Factorial program)
+4. Write a program to show how first private clause works. (Factorial program) - [Factorial Header](factorial.h), [Main](factorial.c)
 
-5. Write an OpenMP parallel program for Points Classification. Prove the
-correctness of sequential program with that of parallel.
+5. Write an OpenMP parallel program for Points Classification. Prove the correctness of sequential program with that of parallel.
 
 6. Write an OpenMP program to convert a color image to black and white
 image. Demonstrate the performance of different scheduling techniques for

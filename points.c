@@ -22,4 +22,9 @@ int main( int argc, char** argv ) {
         printf("%d ", c1.counts[i]);
     }
     printf("\n");
+    free(p);
+    free(c1.centers);
+    free(c1.counts);
+    free(c2.centers);
+    free(c2.counts);
 }

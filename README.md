@@ -17,7 +17,7 @@ Justify the inference. - [Sinprime Header](sinprime.h), [Main](sinprime.c)
 
 5. Write an OpenMP parallel program for Points Classification. Prove the correctness of sequential program with that of parallel. [Points Header](points.h), [Main](points.c)
 
-6. Write an OpenMP program to convert a color image to black and white image. Demonstrate the performance of different scheduling techniques for varying chunk values.
+6. Write an OpenMP program to convert a color image to black and white image. Demonstrate the performance of different scheduling techniques for varying chunk values. [Image Header](image.h), [Main](image.c)
 
 ### Part-B
 

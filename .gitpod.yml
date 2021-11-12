@@ -1,6 +1,7 @@
 tasks:
-  - init: |
+  - init: >
       sudo cp ./compile /usr/bin
-    command: |
+      sudo cp /usr/lib/gcc/x86_64-linux-gnu/9/include/omp.h /usr/include
+    command: >
       sudo cp ./compile /usr/bin
-      compile merge_sort
+      sudo cp /usr/lib/gcc/x86_64-linux-gnu/9/include/omp.h /usr/include

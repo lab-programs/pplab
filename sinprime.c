@@ -1,5 +1,5 @@
 #include "sinprime.h"
-#include <stdlib.h>
+#include "stdlib.h"
 #include "omp.h"
 #include "timer.h"
 

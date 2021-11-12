@@ -1,6 +1,6 @@
 # PPLAB programs 
 
-## Concepts
+## Concepts ( According to docs )
 
 1. Parallel execution which are independent of each other: Use parallel sections
 ```c

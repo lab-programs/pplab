@@ -1,11 +1,9 @@
 #ifndef PPLAB_DOTPRODUCT_H
 #define PPLAB_DOTPRODUCT_H
 
-#define MPI_PATH "/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h"
-
 #include <stdio.h>
 #include <stdlib.h>
-#include MPI_PATH
+#include <mpi/mpi.h>
 
 typedef struct {
     int *v;

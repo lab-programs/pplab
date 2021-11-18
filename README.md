@@ -1,5 +1,80 @@
 # PPLAB programs 
 
+## Concepts ( According to docs )
+
+1. Parallel execution which are independent of each other: Use parallel sections
+```c
+#pragma omp parallel sections 
+{
+    #pragma omp section
+    { ... }
+    #pragma omp section
+    { ... }
+}
+```
+
+2. Parallelize one for loop
+```c
+int i;
+#pragma omp parallel for
+{
+    for( i=0; i<n; i++)
+    { ... }
+}
+```
+
+3. Parallelize multiple for loops
+```c
+int i, j, k;
+#pragma omp parallel for
+{
+    for( i=0; i<n1; i++ )
+    {
+        for( j=0; j<n2; j++ )
+        {
+            for( k=0; k<n3; k++ )
+            { ... }
+        }
+    }
+}
+```
+
+3. Shared: shared data between all threads
+```c
+int i;
+#pragma omp parallel shared(i)
+{ ... }
+```
+4. Private: created a copy for every thread - the value declared before the section is not readable and the value cant be accessed after the section
+```c
+int i=10;
+#pragma omp parallel private(i)
+{
+    // here i value will not be 10
+    ...
+}
+// here i value will be 10, any changes made in above section won't be reflected here
+```
+5. FirstPrivate: the value declared before the section is readable but the value cant be accessed after the section
+```c
+int i=10;
+#pragma omp parallel firstprivate(i)
+{
+    // here i value is 10
+    ...
+}
+// here i value will be 10, any changes made in above section won't be reflected here
+```
+6. LastPrivate: the value declared before the section is not readable but the value 
+```c
+int i=10;
+#pragma omp parallel lastprivate(i)
+{
+    // here i value will not be 10
+    i = 20;
+}
+// here i value will be 20
+```
 ## Questions
 
 ### Part-A

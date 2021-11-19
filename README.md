@@ -815,12 +815,259 @@ int main( int argc, char** argv )
 ### Part-B
 
 7. Write a program for communication among two processes.
+> Header
+```c
+#ifndef PPLAB_PROC_COM_H
+#define PPLAB_PROC_COM_H
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "signal.h"
+#include "sys/types.h"
+#include "unistd.h"
+
+static inline
+void sighup( int );
+static inline
+void sigint( int );
+static inline
+void sigquit( int );
+
+static inline
+void proc_com()
+{
+    int pid = fork();
+    if( pid < 0 )
+    {
+        perror("process not found");
+        exit(1);
+    }
+
+    if( pid == 0 )
+    {
+        /* child process */
+        signal( SIGHUP, sighup );
+        signal( SIGINT, sigint );
+        signal( SIGQUIT, sigquit );
+        for(;;);
+    }
+    else
+    {
+        /* parent process */
+        printf("parent process sent sighup signal\n");
+        kill( pid, SIGHUP );
+        sleep(3);
+
+        printf("parent process sent sigint signal\n");
+        kill( pid, SIGINT );
+        sleep(3);
+        
+        printf("parent process sent sigquit signal\n");
+        kill( pid, SIGQUIT );
+        sleep(3);
+    }
+}
+
+static inline
+void sighup( int pid )
+{
+    signal( SIGHUP, sighup );
+    printf("child process received sighup signal\n");
+}
+
+static inline
+void sigint( int pid )
+{
+    signal( SIGINT, sigint );
+    printf("child process received sigint signal\n");
+}
+
+static inline
+void sigquit( int pid )
+{
+    signal( SIGQUIT, sigquit );
+    printf("child process got destroyed\n");
+}
+
+#endif
+```
+> Main Program
+```c
+#include "proc_com.h"
+
+int main( int argc, char **argv )
+{
+    proc_com();
+}
+```
 
 8. Write MPI program to compute dot product of two vectors using blockstriped 
 partitioning with uniform data distribution.
 
+```c
+#ifndef PPLAB_DOTPRODUCT_H
+#define PPLAB_DOTPRODUCT_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <mpi/mpi.h>
+
+typedef struct {
+    int *v;
+    int n;
+} vector;
+
+static inline
+vector* new_vector( int n )
+{
+    vector* vect = (vector*) malloc( sizeof(vector) );
+    vect->v = (int*) malloc( n * sizeof(int) );
+    vect->n = n;
+    return vect;
+}
+
+static inline
+void free_vector( vector *vect )
+{
+    if( vect == NULL ) return;
+    if( vect->v == NULL )
+    {
+        free( vect );
+        return;
+    }
+    free(vect->v);
+    free(vect);
+} 
+
+#endif
+```
+
+```c
+#include "dotproduct.h"
+
+int main( int argc, char **argv )
+{
+    int i, id, sum, global_sum;
+    int n_proc = 2;
+    int vect_size = 100;
+    if( argc == 2 )
+    {
+        vect_size = atoi(argv[1]);
+    }
+    /* initialize MPI */
+    MPI_Init(&argc, &argv);
+    /* get the number of processors for MPI_COMM_WORLD method */
+    MPI_Comm_size(MPI_COMM_WORLD, &n_proc);
+    /* get the rank of MPI_COMM_WORLD method */
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    
+    /* start the jobs */
+    if( id == 0 )
+        printf("Starting %d jobs to find the dot product:\n", n_proc);
+
+    /* create vectors and assign values */
+    vector* a = new_vector(vect_size);
+    vector* b = new_vector(vect_size);
+    for( i=0; i<vect_size; i++ )
+    {
+        a->v[i] = i*2;
+        b->v[i] = i;
+    }
+    sum = 0;
+    for( i=0; i<vect_size; i++ )
+        sum += a->v[i] * b->v[i];
+    
+    printf("Task %d partial sum = %d\n", id, sum);
+
+    MPI_Reduce(&sum, &global_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if( id == 0 )
+        printf("Done MPI, global sum = %d\n", global_sum);
+
+    free_vector(a);
+    free_vector(b);
+    MPI_Finalize();
+}
+```
+
 9. Write MPI program that computes the value of PI using Monto-Carlo
 Algorithm.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <mpi/mpi.h>
+
+#define SEED 847965282
+
+int main( int argc, char **argv )
+{
+    int n_iter = 100000;
+    int i, id;
+    double x, y, z;
+    int count = 0;
+    double pi;
+    int n_proc;
+
+    if( argc == 2 )
+    {
+        n_iter = atoi(argv[1]);
+    }
+    printf("number of iterations = %d\n", n_iter);
+    MPI_Init( &argc, &argv );
+    MPI_Comm_size( MPI_COMM_WORLD, &n_proc );
+    MPI_Comm_rank( MPI_COMM_WORLD, &id );
+
+    srand(SEED + id); 
+    int received[n_proc];
+    int received_n_iter[n_proc];
+
+    /* if not the root process */
+    if( id != 0 )
+    {
+        for( i=0; i<n_iter; i++ )
+        {
+            x = (double)rand() / (double)RAND_MAX;
+            y = (double)rand() / (double)RAND_MAX;
+            /* calculate distance from the center */
+            z = sqrt(x*x + y*y);
+            /* if z <= 1, the point is inside the circle */
+            if( z <= 1 )
+                count++;
+        }
+
+        for( i=0; i<n_proc; i++ )
+        {
+            MPI_Send(&count, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
+            MPI_Send(&n_iter, 1, MPI_LONG, 0, 2, MPI_COMM_WORLD);
+        }
+    }
+    else {
+        /* if it is the root process */
+        for( int i=0; i<n_proc; i++ )
+        {
+            MPI_Recv(&received[i], 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&received_n_iter[i], 1, MPI_LONG, MPI_ANY_SOURCE, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    }
+
+    if( id == 0 )
+    {
+        int final_count = 0;
+        long final_n_iter = 0;
+        for( i=0; i<n_proc; i++ )
+        {
+            final_count += received[i];
+            final_n_iter += received_n_iter[i];
+        }
+        pi = ((double)final_count / (double)final_n_iter) * 4.0;
+        printf("PI = %lf\n", pi);
+    }
+    /* terminate */
+    MPI_Finalize();
+}
+```
 
 10. C program which creates new communicators involving a subset of initial set
 of MPI processes in the default communicator MPI_COMM_WORLD
